@@ -60,7 +60,9 @@
         // --- Konfigurasi Aplikasi ---
         const currentTable = 'nilai1'; // Nama tabel yang akan diakses
         const apiUrl = 'https://lidan-co-id.pages.dev/api/contacts_filter_dinamis'; // URL API
-        const dataToFetchId = 1; // ID data yang akan diambil untuk pemeriksaan status
+        
+        // Mengambil id_x dari localStorage, yang seharusnya sudah disimpan dari form0.html
+        const dataToFetchId = localStorage.getItem('id_x') || 1; // Menggunakan 1 sebagai fallback jika tidak ada
 
         // --- Event Listener Dokumen ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -125,22 +127,33 @@
                      */
                     const getFirstRowValue = (columnsArray, colIndex) => {
                         if (columnsArray[colIndex]) {
+                            // Memecah kembali dengan delimiter ';' dan mengambil nilai di indeks tertentu
                             return columnsArray[colIndex].split(';')[0].trim();
                         }
                         return '';
                     };
-                    
-                    // --- Logika kondisional baru sesuai permintaan ---
 
-                    // Jika x_02 index 0 ATAU index 2 ATAU index 4 kosong, alihkan ke form0.html
-                    if (getFirstRowValue(explodedColumns_x02, 0) === '' ||
-                        getFirstRowValue(explodedColumns_x02, 2) === '' ||
-                        getFirstRowValue(explodedColumns_x02, 4) === '') {
+                    /**
+                     * Helper function untuk mendapatkan nilai baris dari string yang dipecah dengan ';'.
+                     * @param {string} rawString - String data yang akan dipecah.
+                     * @param {number} rowIndex - Indeks baris (0-based).
+                     * @returns {string} Nilai baris yang sudah di-trim, atau string kosong jika tidak ada.
+                     */
+                     const getSplitRowValue = (rawString, rowIndex) => {
+                        const rows = rawString ? rawString.split(';') : [];
+                        return rows[rowIndex] ? rows[rowIndex].trim() : '';
+                    };
+                    
+                    // --- Logika kondisional untuk biodata yang sudah dimodifikasi ---
+                    const biodataString = explodedColumns_x02[0] || '';
+                    if (getSplitRowValue(biodataString, 0) === '' ||
+                        getSplitRowValue(biodataString, 2) === '' ||
+                        getSplitRowValue(biodataString, 4) === '') {
                         window.location.href = 'form0.html';
-                        return; // Hentikan eksekusi lebih lanjut
+                        return; // Hentikan eksekusi
                     }
 
-                    // Logika kondisional untuk menampilkan tombol soal 01-06 (seperti sebelumnya)
+                    // Logika kondisional untuk menampilkan tombol soal 01-06
                     if (getFirstRowValue(explodedColumns_x05, 0) === '') {
                         buttonHtml = createButton('soal01.html', 'Lanjutkan ke Soal 01', 'bg-blue-500');
                     } else if (getFirstRowValue(explodedColumns_x05, 1) === '') {
@@ -155,13 +168,13 @@
                         buttonHtml = createButton('soal06.html', 'Lanjutkan ke Soal 06', 'bg-purple-500');
                     // Logika baru untuk Soal 07/07a
                     } else if (getFirstRowValue(explodedColumns_x06, 1) === '') {
-                        if (getFirstRowValue(explodedColumns_x02, 4) === 'Laki-laki') {
+                        if (getSplitRowValue(biodataString, 4) === 'Laki-laki') {
                             buttonHtml = createButton('soal07.html', 'Lanjutkan ke Soal 07', 'bg-green-500');
                         } else {
                             buttonHtml = createButton('soal07a.html', 'Lanjutkan ke Soal 07a', 'bg-green-500');
                         }
-                    // Logika baru untuk Soal 08
-                    } else if (getFirstRowValue(explodedColumns_x06, 2) === '') { // Menggunakan indeks 2 agar tidak tumpang tindih
+                    // Logika baru untuk Soal 08 (index 0)
+                    } else if (getFirstRowValue(explodedColumns_x06, 0) === '') {
                         buttonHtml = createButton('soal08.html', 'Lanjutkan ke Soal 08', 'bg-yellow-500');
                     } else {
                         message = 'Selamat! Semua soal yang tersedia telah diselesaikan.';
