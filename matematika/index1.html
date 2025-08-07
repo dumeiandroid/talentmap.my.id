@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Matematika - Mudah</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e6f1ff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .game-container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+            border: 1px solid #b8daff;
+        }
+
+        h1 {
+            color: #1a202c;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        .panel {
+            display: none;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f7fafc;
+            border: 1px solid #cbd5e0;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            color: #4a5568;
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            font-size: 1rem;
+            color: #4a5568;
+            transition: border-color 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 15px;
+            background-color: #38b2ac;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+        
+        .answer-button {
+            flex: 1 1 45%;
+            padding: 15px;
+            margin: 5px;
+            background-color: #4299e1;
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .start-button:hover {
+            background-color: #319795;
+            transform: translateY(-2px);
+        }
+
+        .answer-button:hover {
+            background-color: #3182ce;
+            transform: translateY(-2px);
+        }
+        
+        #timer-bar-container {
+            width: 100%;
+            height: 20px;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        #timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: #38b2ac;
+            transition: width 1s linear;
+        }
+
+        #question {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        #options-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #feedback {
+            min-height: 25px;
+            font-weight: bold;
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+
+        .correct {
+            color: #38a169;
+        }
+
+        .incorrect {
+            color: #e53e3e;
+        }
+        
+        .correct-answer-btn {
+            background-color: #38a169;
+        }
+        
+        .incorrect-answer-btn {
+            background-color: #e53e3e;
+        }
+
+        #score {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+            margin-top: 20px;
+        }
+
+        #final-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #38a169;
+        }
+
+        #result-panel p {
+            font-size: 1.2rem;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Game Matematika - Mudah</h1>
+
+        <!-- Panel Pengaturan Game -->
+        <div id="settings-panel" class="panel active">
+            <h2>Pilih Operasi</h2>
+            <label for="operation">Pilih Operasi:</label>
+            <select id="operation">
+                <option value="addition">Penjumlahan (+)</option>
+                <option value="subtraction">Pengurangan (-)</option>
+                <option value="multiplication">Perkalian (x)</option>
+                <option value="division">Pembagian (÷)</option>
+                <option value="power">Pangkat (a^b)</option>
+                <option value="root">Akar Kuadrat (√a)</option>
+            </select>
+            
+            <button id="start-button" class="start-button">Mulai Game</button>
+        </div>
+
+        <!-- Panel Permainan -->
+        <div id="game-panel" class="panel">
+            <div id="timer-bar-container">
+                <div id="timer-bar"></div>
+            </div>
+            <div id="question"></div>
+            <div id="options-container">
+                <button class="answer-button"></button>
+                <button class="answer-button"></button>
+                <button class="answer-button"></button>
+                <button class="answer-button"></button>
+                <button class="answer-button"></button>
+            </div>
+            <div id="feedback"></div>
+            <div id="score">Skor: <span id="current-score">0</span></div>
+        </div>
+
+        <!-- Panel Hasil Akhir -->
+        <div id="result-panel" class="panel">
+            <h2>Game Selesai!</h2>
+            <p>Skor Akhir: <span id="final-score"></span></p>
+            <button id="restart-button" class="start-button">Main Lagi</button>
+        </div>
+    </div>
+    
+    <script>
+        // Memilih elemen-elemen HTML
+        const settingsPanel = document.getElementById('settings-panel');
+        const gamePanel = document.getElementById('game-panel');
+        const resultPanel = document.getElementById('result-panel');
+        
+        const operationSelect = document.getElementById('operation');
+        const startButton = document.getElementById('start-button');
+        
+        const timerBar = document.getElementById('timer-bar');
+        const questionArea = document.getElementById('question');
+        const optionsContainer = document.getElementById('options-container');
+        const answerButtons = document.querySelectorAll('.answer-button');
+        const feedbackArea = document.getElementById('feedback');
+        const scoreDisplay = document.getElementById('current-score');
+        
+        const finalScoreDisplay = document.getElementById('final-score');
+        const restartButton = document.getElementById('restart-button');
+        
+        // Variabel untuk state game
+        const TIME_LIMIT = 20; // Waktu pengerjaan tetap 20 detik
+        let score = 0;
+        let timeRemaining = 0;
+        let timerId;
+        let currentAnswer;
+        
+        // Fungsi untuk menghasilkan angka acak
+        function getRandomNumber(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+        
+        // Fungsi untuk mengacak array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Fungsi untuk membuat pertanyaan baru
+        function generateQuestion() {
+            const operation = operationSelect.value;
+            let num1, num2, questionText, correctAnswer;
+        
+            switch (operation) {
+                case 'addition':
+                    num1 = getRandomNumber(10, 99); // 2-digit
+                    num2 = getRandomNumber(1, 9);  // 1-digit
+                    questionText = `${num1} + ${num2} = ?`;
+                    correctAnswer = num1 + num2;
+                    break;
+                case 'subtraction':
+                    num1 = getRandomNumber(10, 99);
+                    num2 = getRandomNumber(1, 9);
+                    if (num1 < num2) {
+                        [num1, num2] = [num2, num1];
+                    }
+                    questionText = `${num1} - ${num2} = ?`;
+                    correctAnswer = num1 - num2;
+                    break;
+                case 'multiplication':
+                    num1 = getRandomNumber(1, 9); // 1-digit
+                    num2 = getRandomNumber(1, 9); // 1-digit
+                    questionText = `${num1} x ${num2} = ?`;
+                    correctAnswer = num1 * num2;
+                    break;
+                case 'division':
+                    num2 = getRandomNumber(1, 9); // 1-digit
+                    correctAnswer = getRandomNumber(1, 9); // Hasil 1-digit
+                    num1 = num2 * correctAnswer;
+                    questionText = `${num1} ÷ ${num2} = ?`;
+                    break;
+                case 'power':
+                    num1 = getRandomNumber(1, 9);
+                    num2 = 2;
+                    questionText = `${num1}² = ?`;
+                    correctAnswer = Math.pow(num1, num2);
+                    break;
+                case 'root':
+                    correctAnswer = getRandomNumber(1, 9);
+                    num1 = correctAnswer * correctAnswer;
+                    questionText = `√${num1} = ?`;
+                    break;
+                default:
+                    break;
+            }
+        
+            questionArea.textContent = questionText;
+            currentAnswer = correctAnswer;
+            feedbackArea.textContent = '';
+            
+            // Buat pilihan jawaban
+            const options = new Set();
+            options.add(correctAnswer);
+            while (options.size < 5) {
+                let incorrectOption;
+                const offset = getRandomNumber(-5, 5);
+                incorrectOption = correctAnswer + offset;
+                if (incorrectOption > 0 && !options.has(incorrectOption)) {
+                    options.add(incorrectOption);
+                }
+            }
+            
+            const shuffledOptions = shuffleArray(Array.from(options));
+            
+            answerButtons.forEach((button, index) => {
+                button.textContent = shuffledOptions[index];
+                button.classList.remove('correct-answer-btn', 'incorrect-answer-btn');
+            });
+        }
+        
+        // Fungsi untuk memulai timer
+        function startTimer() {
+            timeRemaining = TIME_LIMIT;
+            timerBar.style.width = '100%';
+            
+            timerId = setInterval(() => {
+                timeRemaining--;
+                const widthPercentage = (timeRemaining / TIME_LIMIT) * 100;
+                timerBar.style.width = widthPercentage + '%';
+        
+                if (timeRemaining <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        // Fungsi untuk mengakhiri permainan
+        function endGame() {
+            clearInterval(timerId);
+            gamePanel.classList.remove('active');
+            resultPanel.classList.add('active');
+            finalScoreDisplay.textContent = score;
+        }
+        
+        // Fungsi untuk memeriksa jawaban
+        function checkAnswer(event) {
+            const userAnswer = parseInt(event.target.textContent);
+            
+            if (userAnswer === currentAnswer) {
+                score++;
+                scoreDisplay.textContent = score;
+                feedbackArea.textContent = 'Benar!';
+                feedbackArea.className = 'correct';
+            } else {
+                feedbackArea.textContent = `Salah. Jawaban yang benar adalah ${currentAnswer}`;
+                feedbackArea.className = 'incorrect';
+                event.target.classList.add('incorrect-answer-btn');
+                answerButtons.forEach(button => {
+                    if (parseInt(button.textContent) === currentAnswer) {
+                        button.classList.add('correct-answer-btn');
+                    }
+                });
+            }
+            
+            setTimeout(() => {
+                generateQuestion();
+            }, 1000);
+        }
+        
+        // Event Listeners
+        startButton.addEventListener('click', () => {
+            settingsPanel.classList.remove('active');
+            gamePanel.classList.add('active');
+            score = 0;
+            scoreDisplay.textContent = score;
+            startTimer();
+            generateQuestion();
+        });
+        
+        answerButtons.forEach(button => {
+            button.addEventListener('click', checkAnswer);
+        });
+        
+        restartButton.addEventListener('click', () => {
+            resultPanel.classList.remove('active');
+            settingsPanel.classList.add('active');
+        });
+        
+        settingsPanel.classList.add('active');
+    </script>
+</body>
+</html>
